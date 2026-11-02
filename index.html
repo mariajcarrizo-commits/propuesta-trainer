@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tu plataforma de entrenamiento</title>
+<meta name="theme-color" content="#0c0c10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ==========================================================
+     CONFIGURACIÓN — editá solo esto
+     ========================================================== */
+  :root{
+    --bg:#0c0c10;
+    --card:#15151c;
+    --card-2:#1c1c26;
+    --line:#2a2a38;
+    --text:#f3f1f7;
+    --muted:#9a96a8;
+    --fucsia:#e040a0;
+    --purple:#b06aff;
+    --grad:linear-gradient(135deg,#b06aff 0%,#e040a0 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:'Outfit',system-ui,sans-serif;
+    background:var(--bg);color:var(--text);
+    min-height:100dvh;display:flex;flex-direction:column;
+    background-image:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(176,106,255,.22),transparent 70%);
+    background-attachment:fixed;
+  }
+  header{padding:18px 20px 0;max-width:640px;width:100%;margin:0 auto}
+  .brand{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  .brand b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+  .bar{height:6px;background:var(--card-2);border-radius:99px;margin-top:14px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--grad);border-radius:99px;transition:width .4s ease}
+  .meta{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}
+
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 20px;max-width:640px;width:100%;margin:0 auto}
+  .screen{width:100%;animation:in .35s ease}
+  @keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .tag{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--purple);background:rgba(176,106,255,.12);border:1px solid rgba(176,106,255,.3);padding:5px 11px;border-radius:99px;margin-bottom:16px}
+  h1{font-size:clamp(28px,7vw,40px);line-height:1.1;font-weight:700;margin-bottom:14px}
+  h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{font-size:clamp(22px,5.5vw,28px);line-height:1.25;font-weight:600;margin-bottom:8px}
+  p.lead{color:var(--muted);font-size:16px;line-height:1.55;margin-bottom:8px}
+  .hint{color:var(--muted);font-size:14px;margin-bottom:22px}
+
+  .opts{display:grid;gap:10px}
+  .opt{
+    display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    background:var(--card);border:1.5px solid var(--line);color:var(--text);
+    font:inherit;font-size:16px;padding:15px 16px;border-radius:14px;cursor:pointer;
+    transition:border-color .15s,background .15s,transform .1s;
+  }
+  .opt:active{transform:scale(.98)}
+  .opt .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;transition:all .15s}
+  .opt.multi .dot{border-radius:7px}
+  .opt.sel{border-color:var(--fucsia);background:rgba(224,64,160,.09)}
+  .opt.sel .dot{border-color:transparent;background:var(--grad)}
+  .opt.sel .dot::after{content:"";width:9px;height:5px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+
+  textarea,input[type=text]{
+    width:100%;background:var(--card);border:1.5px solid var(--line);color:var(--text);
+    font:inherit;font-size:16px;padding:15px 16px;border-radius:14px;outline:none;resize:vertical;
+    transition:border-color .15s;
+  }
+  textarea{min-height:130px;line-height:1.5}
+  textarea:focus,input[type=text]:focus{border-color:var(--purple)}
+  .other{margin-top:10px;display:none}
+  .other.show{display:block}
+
+  footer{padding:14px 20px calc(18px + env(safe-area-inset-bottom));max-width:640px;width:100%;margin:0 auto;display:flex;gap:10px}
+  .btn{
+    flex:1;border:none;font:inherit;font-size:16px;font-weight:600;padding:16px;border-radius:14px;cursor:pointer;
+    background:var(--grad);color:#fff;box-shadow:0 8px 24px -8px rgba(224,64,160,.55);transition:opacity .15s,transform .1s;
+  }
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+  .btn.ghost{flex:0 0 auto;background:var(--card);color:var(--muted);box-shadow:none;border:1.5px solid var(--line);padding:16px 20px}
+  .btn.wa{background:#25d366;box-shadow:0 8px 24px -8px rgba(37,211,102,.5)}
+  .skip{display:block;margin:14px auto 0;background:none;border:none;color:var(--muted);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
+
+  .summary{display:grid;gap:10px;margin:20px 0 6px;max-height:44vh;overflow:auto;padding-right:4px}
+  .summary div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .summary small{display:block;color:var(--muted);font-size:12px;margin-bottom:3px}
+  .summary span{font-size:15px}
+  .feat{display:grid;gap:10px;margin:22px 0 4px}
+  .feat div{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:15px}
+  .feat b{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--card-2);border:1px solid var(--line);font-size:17px}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--card-2);border:1px solid var(--line);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header id="hdr" style="visibility:hidden">
+  <div class="brand"><span><b>Tu plataforma</b></span><span id="secName"></span></div>
+  <div class="bar"><i id="barFill"></i></div>
+  <div class="meta"><span id="count"></span><span>~5 min</span></div>
+</header>
+
+<main id="main"></main>
+<footer id="foot"></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================
+   CONFIGURACIÓN — editá solo esto
+   ========================================================== */
+const NOMBRE_TRAINER = "Roxy";        // personaliza el saludo. Vacío = saludo genérico
+const WHATSAPP_DESTINO = "5491166478496"; // tu número, sin + ni espacios
+const FIRMA = "Majo Carrizo";
+
+/* Tipos: "single" (una opción), "multi" (varias), "text" (texto libre)
+   allowOther: agrega opción "Otro" con campo de texto
+   optional: se puede saltear */
+const PREGUNTAS = [
+  // --- Tu negocio hoy ---
+  { sec:"Tu negocio hoy", id:"alumnas", type:"single", q:"¿Cuántas alumnas tenés hoy?",
+    opts:["Menos de 10","Entre 10 y 30","Entre 30 y 80","Más de 80"] },
+  { sec:"Tu negocio hoy", id:"crecimiento", type:"single", q:"¿Y cuántas te gustaría tener en un año?",
+    opts:["Las mismas, quiero atenderlas mejor","El doble","Muchas más, quiero escalar","No lo pensé todavía"] },
+  { sec:"Tu negocio hoy", id:"cobro_forma", type:"multi", q:"¿Cómo les cobrás?", hint:"Podés elegir varias",
+    opts:["Abono mensual","Por plan o programa cerrado","Por clase","Clases presenciales + online"], allowOther:true },
+  { sec:"Tu negocio hoy", id:"cobro_medio", type:"multi", q:"¿Por dónde te pagan?", hint:"Podés elegir varias",
+    opts:["Mercado Pago","Transferencia","Efectivo","Link de pago"], allowOther:true },
+  { sec:"Tu negocio hoy", id:"personalizacion", type:"single", q:"¿Todas tus alumnas reciben lo mismo o cada una tiene su rutina?",
+    opts:["Todas ven lo mismo","Por grupos o niveles","Cada una tiene su rutina personalizada","Una mezcla de todo"] },
+  { sec:"Tu negocio hoy", id:"equipo", type:"single", q:"¿Trabajás sola o con más gente?",
+    opts:["Sola","Con otros profes","Con nutricionista u otros profesionales","Con un equipo completo"] },
+
+  // --- Tu contenido ---
+  { sec:"Tu contenido", id:"videos_cant", type:"single", q:"¿Cuántos videos tenés hoy en el Drive, más o menos?",
+    opts:["Menos de 30","Entre 30 y 100","Entre 100 y 300","Más de 300"] },
+  { sec:"Tu contenido", id:"videos_tipo", type:"multi", q:"¿Qué tipo de videos son?", hint:"Podés elegir varias",
+    opts:["Demos cortas de ejercicios (menos de 1 min)","Rutinas o clases completas","Explicaciones o tips","Vivos grabados"], allowOther:true },
+  { sec:"Tu contenido", id:"videos_freq", type:"single", q:"¿Con qué frecuencia subís material nuevo?",
+    opts:["Varias veces por semana","Una vez por semana","Una o dos veces por mes","Casi nunca, ya tengo todo grabado"] },
+  { sec:"Tu contenido", id:"otro_material", type:"multi", q:"Además de videos, ¿qué más les mandás?", hint:"Podés elegir varias",
+    opts:["Rutinas escritas o PDFs","Planes de alimentación","Fotos o imágenes","Audios","Nada más"], allowOther:true },
+  { sec:"Tu contenido", id:"proteccion", type:"single", q:"¿Te preocupa que compartan tus videos con gente que no paga?",
+    opts:["Sí, mucho","Un poco","No me preocupa"] },
+
+  // --- La app ---
+  { sec:"La app", id:"dolor_drive", type:"multi", q:"¿Qué es lo que más te molesta de usar Drive hoy?", hint:"Podés elegir varias",
+    opts:["Es desordenado, no encuentran las cosas","No sé quién vio qué","Los links se comparten","Se ve poco profesional","Me lleva mucho tiempo armarlo"], allowOther:true },
+  { sec:"La app", id:"funciones", type:"multi", q:"¿Qué te gustaría que tus alumnas puedan hacer en la app?", hint:"Elegí todas las que quieras",
+    opts:["Ver su rutina del día con los videos","Registrar series, pesos y repeticiones","Ver su progreso","Temporizadores para descansos","Ver su plan de alimentación","Hacerte consultas o comentarios"], allowOther:true },
+  { sec:"La app", id:"funciones_trainer", type:"multi", q:"¿Y vos, qué te gustaría poder hacer?", hint:"Elegí todas las que quieras",
+    opts:["Subir videos fácil desde el celu","Armar rutinas y asignarlas","Ver quién entrena y quién no","Ver el progreso de cada alumna","Mandar avisos a todas","Controlar quién pagó"], allowOther:true },
+  { sec:"La app", id:"comunicacion", type:"single", q:"¿Cómo preferís comunicarte con tus alumnas?",
+    opts:["Sigo por WhatsApp, la app es solo para el contenido","Me gustaría tener chat dentro de la app","Avisos o novedades en la app, el resto por WhatsApp"] },
+  { sec:"La app", id:"venta", type:"single", q:"¿Querés vender planes a gente nueva desde la app?",
+    opts:["Sí, que se puedan suscribir y pagar solas","Más adelante","No, es solo para mis alumnas actuales"] },
+  { sec:"La app", id:"cobro_auto", type:"single", q:"¿Te serviría que la app cobre sola cada mes y corte el acceso si alguien no paga?",
+    opts:["¡Sí, me encantaría!","Puede ser","No, prefiero manejar los cobros yo"] },
+
+  // --- Marca y tiempos ---
+  { sec:"Marca y tiempos", id:"marca", type:"single", q:"¿Tenés marca propia?",
+    opts:["Sí: logo, colores, todo","Tengo nombre y logo, nada más","Solo mi Instagram","No, habría que armarla"] },
+  { sec:"Marca y tiempos", id:"instagram", type:"text", q:"¿Cuál es tu Instagram o web?", hint:"Así veo tu estilo", placeholder:"@tuusuario", optional:true },
+  { sec:"Marca y tiempos", id:"modalidad", type:"single", q:"¿Qué modalidad de pago te resulta más cómoda?",
+    opts:["Pagar una vez por el desarrollo","Un abono mensual chico que incluya mantenimiento","Una mezcla de los dos","Prefiero ver opciones"] },
+  { sec:"Marca y tiempos", id:"cuando", type:"single", q:"¿Para cuándo te gustaría tenerla?",
+    opts:["Lo antes posible","En 1 o 2 meses","Para arrancar el año que viene","Sin apuro"] },
+  { sec:"Marca y tiempos", id:"extra", type:"text", q:"¿Algo más que quieras contarme o que te imagines para tu app?",
+    placeholder:"Todo suma: ideas, apps que te gustan, cosas que no querés…", optional:true },
+];
+
+/* ==========================================================
+   LÓGICA — no hace falta tocar
+   ========================================================== */
+const OTRO = "Otro";
+const KEY = "encuesta-trainer-v1";
+let i = -1;            // -1 = bienvenida, PREGUNTAS.length = resumen
+let A = {};            // respuestas
+let nombre = "";
+
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s){A=s.A||{};nombre=s.nombre||""} }catch(e){}
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify({A,nombre})) }catch(e){} };
+
+const $ = s => document.querySelector(s);
+const main = $("#main"), foot = $("#foot");
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),2000) }
+
+function header(){
+  const inQ = i>=0 && i<PREGUNTAS.length;
+  $("#hdr").style.visibility = inQ ? "visible" : "hidden";
+  if(!inQ) return;
+  $("#barFill").style.width = ((i)/PREGUNTAS.length*100)+"%";
+  $("#count").textContent = `Pregunta ${i+1} de ${PREGUNTAS.length}`;
+  $("#secName").textContent = PREGUNTAS[i].sec;
+}
+
+function answered(p){
+  const a = A[p.id];
+  if(p.optional) return true;
+  if(p.type==="text") return a && a.v && a.v.trim();
+  if(!a || !a.v || (Array.isArray(a.v) && !a.v.length)) return false;
+  const sel = Array.isArray(a.v) ? a.v : [a.v];
+  if(sel.includes(OTRO) && !(a.otro||"").trim()) return false;
+  return true;
+}
+
+function render(){
+  header();
+  window.scrollTo(0,0);
+  if(i===-1) return welcome();
+  if(i===PREGUNTAS.length) return summary();
+  const p = PREGUNTAS[i];
+  const a = A[p.id] || {v: p.type==="multi"?[]:"", otro:""};
+  A[p.id] = a;
+
+  let body = `<div class="screen"><h2>${esc(p.q)}</h2><p class="hint">${esc(p.hint||(p.type==="single"?"Elegí una opción":""))}</p>`;
+  if(p.type==="text"){
+    body += `<textarea id="txt" placeholder="${esc(p.placeholder||"")}">${esc(a.v||"")}</textarea>`;
+  } else {
+    const opts = p.allowOther ? [...p.opts, OTRO] : p.opts;
+    const sel = Array.isArray(a.v)?a.v:[a.v];
+    body += `<div class="opts">` + opts.map((o,k)=>
+      `<button class="opt ${p.type==="multi"?"multi":""} ${sel.includes(o)?"sel":""}" data-k="${k}"><span class="dot"></span><span>${esc(o)}</span></button>`
+    ).join("") + `</div>`;
+    if(p.allowOther) body += `<input type="text" id="otro" class="other ${sel.includes(OTRO)?"show":""}" placeholder="Contame cuál…" value="${esc(a.otro||"")}">`;
+  }
+  if(p.optional) body += `<button class="skip" id="skip">Saltear</button>`;
+  body += `</div>`;
+  main.innerHTML = body;
+
+  foot.innerHTML = `<button class="btn ghost" id="back">←</button><button class="btn" id="next">${i===PREGUNTAS.length-1?"Ver resumen":"Siguiente"}</button>`;
+  $("#back").onclick = () => { i--; render(); };
+  $("#next").onclick = next;
+  if($("#skip")) $("#skip").onclick = () => { A[p.id] = {v:"",otro:""}; save(); i++; render(); };
+
+  if(p.type==="text"){
+    const t=$("#txt"); t.oninput=()=>{a.v=t.value; save(); upd()};
+  } else {
+    const opts = p.allowOther ? [...p.opts, OTRO] : p.opts;
+    main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const o = opts[+b.dataset.k];
+      if(p.type==="single"){
+        a.v=o;
+        main.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+      } else {
+        a.v = a.v.includes(o) ? a.v.filter(x=>x!==o) : [...a.v,o];
+        b.classList.toggle("sel");
+      }
+      const sel = Array.isArray(a.v)?a.v:[a.v];
+      const ot=$("#otro");
+      if(ot){ ot.classList.toggle("show", sel.includes(OTRO)); if(sel.includes(OTRO)) ot.focus(); }
+      save(); upd();
+      // avance automático en single (salvo "Otro")
+      if(p.type==="single" && o!==OTRO) setTimeout(()=>{ if(A[p.id].v===o){ i++; render(); } }, 320);
+    });
+    const ot=$("#otro"); if(ot) ot.oninput=()=>{a.otro=ot.value; save(); upd()};
+  }
+  upd();
+  function upd(){ $("#next").disabled = !answered(p) }
+}
+
+function next(){ const p=PREGUNTAS[i]; if(!answered(p)) return; i++; render(); }
+
+function welcome(){
+  const saludo = NOMBRE_TRAINER ? `¡Hola, ${esc(NOMBRE_TRAINER)}!` : "¡Hola!";
+  main.innerHTML = `<div class="screen">
+    <span class="tag">Primer paso</span>
+    <h1>${saludo}<br>Armemos <span>tu app</span> de entrenamiento</h1>
+    <p class="lead">Te hago unas preguntas cortas sobre cómo trabajás hoy y qué te imaginás. Con esto preparo una propuesta y una demo pensadas para vos.</p>
+    <div class="feat">
+      <div><b>⏱</b> Son ${PREGUNTAS.length} preguntas, unos 5 minutos</div>
+      <div><b>👆</b> La mayoría se responden con un toque</div>
+      <div><b>💾</b> Si cerrás, tus respuestas quedan guardadas</div>
+    </div>
+    <input type="text" id="nom" placeholder="¿Cómo te llamás?" value="${esc(nombre)}" style="margin-top:18px">
+  </div>`;
+  foot.innerHTML = `<button class="btn" id="go">Empezar</button>`;
+  const n=$("#nom"), go=$("#go");
+  const upd=()=>{ go.disabled=!n.value.trim() };
+  n.oninput=()=>{ nombre=n.value; save(); upd() };
+  n.onkeydown=e=>{ if(e.key==="Enter" && n.value.trim()) go.click() };
+  go.onclick=()=>{ i=0; render(); };
+  upd();
+}
+
+function fmt(p){
+  const a=A[p.id]; if(!a) return "—";
+  if(p.type==="text") return (a.v||"").trim() || "—";
+  const sel=(Array.isArray(a.v)?a.v:[a.v]).filter(Boolean).map(x=> x===OTRO ? `Otro: ${a.otro||""}` : x);
+  return sel.length ? sel.join(", ") : "—";
+}
+
+function buildText(){
+  let t = `*Encuesta — Plataforma de entrenamiento*\n👤 ${nombre}\n`;
+  let sec="";
+  PREGUNTAS.forEach(p=>{
+    if(p.sec!==sec){ sec=p.sec; t+=`\n*— ${sec.toUpperCase()} —*\n`; }
+    t += `• ${p.q}\n   → ${fmt(p)}\n`;
+  });
+  return t;
+}
+
+function summary(){
+  main.innerHTML = `<div class="screen">
+    <span class="tag">¡Listo!</span>
+    <h2>Gracias, ${esc(nombre.split(" ")[0])} 💜</h2>
+    <p class="lead">Revisá tus respuestas y mandámelas por WhatsApp. Con esto armo tu propuesta.</p>
+    <div class="summary">${PREGUNTAS.map((p,k)=>`<div data-k="${k}" style="cursor:pointer"><small>${esc(p.q)}</small><span>${esc(fmt(p))}</span></div>`).join("")}</div>
+    <p class="hint" style="margin:8px 0 0">Tocá una respuesta para cambiarla.</p>
+    <button class="skip" id="copy">Copiar respuestas</button>
+  </div>`;
+  main.querySelectorAll(".summary div").forEach(d=>d.onclick=()=>{ i=+d.dataset.k; render(); });
+  foot.innerHTML = `<button class="btn ghost" id="back">←</button><button class="btn wa" id="send">Enviar por WhatsApp</button>`;
+  $("#back").onclick=()=>{ i--; render(); };
+  $("#send").onclick=()=>{ window.open(`https://wa.me/${WHATSAPP_DESTINO}?text=${encodeURIComponent(buildText())}`,"_blank"); };
+  $("#copy").onclick=async()=>{
+    try{ await navigator.clipboard.writeText(buildText()); toast("Respuestas copiadas") }
+    catch(e){ toast("No se pudo copiar") }
+  };
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter" && !e.shiftKey && i>=0 && i<PREGUNTAS.length && document.activeElement.tagName!=="TEXTAREA"){
+    e.preventDefault(); next();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
