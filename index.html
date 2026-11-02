@@ -178,10 +178,10 @@ const OTRO = "Otro";
 const KEY = "encuesta-trainer-v1";
 let i = -1;            // -1 = bienvenida, PREGUNTAS.length = resumen
 let A = {};            // respuestas
-let nombre = "";
+let negocio = "";   // nombre de su academia / empresa / plataforma (opcional)
 
-try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s){A=s.A||{};nombre=s.nombre||""} }catch(e){}
-const save = () => { try{ localStorage.setItem(KEY, JSON.stringify({A,nombre})) }catch(e){} };
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s){A=s.A||{};negocio=s.negocio||""} }catch(e){}
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify({A,negocio})) }catch(e){} };
 
 const $ = s => document.querySelector(s);
 const main = $("#main"), foot = $("#foot");
@@ -276,15 +276,14 @@ function welcome(){
       <div><b>👆</b> La mayoría se responden con un toque</div>
       <div><b>💾</b> Si cerrás, tus respuestas quedan guardadas</div>
     </div>
-    <input type="text" id="nom" placeholder="¿Cómo te llamás?" value="${esc(nombre)}" style="margin-top:18px">
+    <label for="nom" style="display:block;margin-top:18px;margin-bottom:8px;font-size:14px;color:var(--muted)">¿Cómo se llama tu academia, marca o plataforma? <span style="opacity:.7">(si todavía no tiene nombre, dejalo vacío)</span></label>
+    <input type="text" id="nom" placeholder="Tu academia, marca o plataforma" value="${esc(negocio)}">
   </div>`;
   foot.innerHTML = `<button class="btn" id="go">Empezar</button>`;
   const n=$("#nom"), go=$("#go");
-  const upd=()=>{ go.disabled=!n.value.trim() };
-  n.oninput=()=>{ nombre=n.value; save(); upd() };
-  n.onkeydown=e=>{ if(e.key==="Enter" && n.value.trim()) go.click() };
+  n.oninput=()=>{ negocio=n.value; save() };
+  n.onkeydown=e=>{ if(e.key==="Enter") go.click() };
   go.onclick=()=>{ i=0; render(); };
-  upd();
 }
 
 function fmt(p){
@@ -295,7 +294,8 @@ function fmt(p){
 }
 
 function buildText(){
-  let t = `*Encuesta — Plataforma de entrenamiento*\n👤 ${nombre}\n`;
+  let t = `*Encuesta — Plataforma de entrenamiento*\n👤 ${NOMBRE_TRAINER || "Sin nombre"}\n`;
+  if(negocio.trim()) t += `🏷 Academia/marca: ${negocio.trim()}\n`;
   let sec="";
   PREGUNTAS.forEach(p=>{
     if(p.sec!==sec){ sec=p.sec; t+=`\n*— ${sec.toUpperCase()} —*\n`; }
@@ -307,7 +307,7 @@ function buildText(){
 function summary(){
   main.innerHTML = `<div class="screen">
     <span class="tag">¡Listo!</span>
-    <h2>Gracias, ${esc(nombre.split(" ")[0])} 💜</h2>
+    <h2>${NOMBRE_TRAINER ? `Gracias, ${esc(NOMBRE_TRAINER)}` : "¡Gracias!"} 💜</h2>
     <p class="lead">Revisá tus respuestas y mandámelas por WhatsApp. Con esto armo tu propuesta.</p>
     <div class="summary">${PREGUNTAS.map((p,k)=>`<div data-k="${k}" style="cursor:pointer"><small>${esc(p.q)}</small><span>${esc(fmt(p))}</span></div>`).join("")}</div>
     <p class="hint" style="margin:8px 0 0">Tocá una respuesta para cambiarla.</p>
